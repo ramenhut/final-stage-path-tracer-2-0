@@ -22,4 +22,4 @@ Final Stage is a basic path tracer that demonstrates some of the most popular re
 This software is released under the terms of the BSD 2-Clause “Simplified” License.
 
 ### More Information
-For more information, including pre-built binaries, visit [http://www.bertolami.com](http://bertolami.com/index.php?engine=portfolio&content=compression&detail=cairo-tools).
+For more information, including pre-built binaries, visit [http://www.bertolami.com](http://bertolami.com/index.php?engine=portfolio&content=graphics&detail=final-stage-2-0).
