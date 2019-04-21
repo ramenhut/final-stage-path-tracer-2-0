@@ -1,0 +1,204 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files\BaseWindow">
+      <UniqueIdentifier>{23cd0e48-f4de-4808-95a5-ea72abb2fcb3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\BaseWindow">
+      <UniqueIdentifier>{832ecf97-9870-41b7-ab06-755a81b95b8e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\BaseMath">
+      <UniqueIdentifier>{49c8d118-e899-4348-92a2-74d6ff043dce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\BaseMath">
+      <UniqueIdentifier>{96668647-64c7-4263-aaed-298f096fa185}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Loaders">
+      <UniqueIdentifier>{c7374691-f21a-476c-a906-a124936dc584}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\math\volume.cpp">
+      <Filter>Source Files\BaseMath</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\math\vector4.cpp">
+      <Filter>Source Files\BaseMath</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\math\vector3.cpp">
+      <Filter>Source Files\BaseMath</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\math\vector2.cpp">
+      <Filter>Source Files\BaseMath</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\math\trace.cpp">
+      <Filter>Source Files\BaseMath</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\math\statistics.cpp">
+      <Filter>Source Files\BaseMath</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\math\regression.cpp">
+      <Filter>Source Files\BaseMath</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\math\random.cpp">
+      <Filter>Source Files\BaseMath</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\math\quaternion.cpp">
+      <Filter>Source Files\BaseMath</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\math\normal.cpp">
+      <Filter>Source Files\BaseMath</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\math\matrix4.cpp">
+      <Filter>Source Files\BaseMath</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\math\matrix3.cpp">
+      <Filter>Source Files\BaseMath</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\math\matrix2.cpp">
+      <Filter>Source Files\BaseMath</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\math\intersect.cpp">
+      <Filter>Source Files\BaseMath</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\math\curve.cpp">
+      <Filter>Source Files\BaseMath</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\window\base_graphics.cpp">
+      <Filter>Source Files\BaseWindow</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\window\base_window.cpp">
+      <Filter>Source Files\BaseWindow</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\window\base_window_win.cpp">
+      <Filter>Source Files\BaseWindow</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\frame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\material.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\object.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\bitmap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\bvh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\engine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\math\vector4.h">
+      <Filter>Header Files\BaseMath</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\math\vector3.h">
+      <Filter>Header Files\BaseMath</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\math\vector2.h">
+      <Filter>Header Files\BaseMath</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\math\trace.h">
+      <Filter>Header Files\BaseMath</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\math\statistics.h">
+      <Filter>Header Files\BaseMath</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\math\solver.h">
+      <Filter>Header Files\BaseMath</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\math\scalar.h">
+      <Filter>Header Files\BaseMath</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\math\random.h">
+      <Filter>Header Files\BaseMath</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\math\quaternion.h">
+      <Filter>Header Files\BaseMath</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\math\plane.h">
+      <Filter>Header Files\BaseMath</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\math\normal.h">
+      <Filter>Header Files\BaseMath</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\math\matrix4.h">
+      <Filter>Header Files\BaseMath</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\math\matrix3.h">
+      <Filter>Header Files\BaseMath</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\math\matrix2.h">
+      <Filter>Header Files\BaseMath</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\math\intersect.h">
+      <Filter>Header Files\BaseMath</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\math\interpolate.h">
+      <Filter>Header Files\BaseMath</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\math\hash.h">
+      <Filter>Header Files\BaseMath</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\math\curve.h">
+      <Filter>Header Files\BaseMath</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\math\base.h">
+      <Filter>Header Files\BaseMath</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\math\volume.h">
+      <Filter>Header Files\BaseMath</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tiny_exr_loader.h">
+      <Filter>Header Files\Loaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\third_party\tiny_obj_loader.h">
+      <Filter>Header Files\Loaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\window\base_types.h">
+      <Filter>Header Files\BaseWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\window\base_window.h">
+      <Filter>Header Files\BaseWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\window\base_graphics.h">
+      <Filter>Header Files\BaseWindow</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\material.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\object.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\bitmap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\bvh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\engine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\frame.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
