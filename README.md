@@ -23,8 +23,11 @@ Final Stage is a basic path tracer that demonstrates some of the most popular re
 ### Screenshots
 ![Screenshot](https://github.com/ramenhut/final-stage-path-tracer-2-0/raw/master/thumbnails/fs2-30-s.jpg?raw=true)
 ![Screenshot](https://github.com/ramenhut/final-stage-path-tracer-2-0/raw/master/thumbnails/fs2-32-s.jpg?raw=true)
+![Screenshot](https://github.com/ramenhut/final-stage-path-tracer-2-0/raw/master/thumbnails/fs2-33-s.jpg?raw=true)
+![Screenshot](https://github.com/ramenhut/final-stage-path-tracer-2-0/raw/master/thumbnails/fs2-31-s.jpg?raw=true)
 ![Screenshot](https://github.com/ramenhut/final-stage-path-tracer-2-0/raw/master/thumbnails/fs2-1-s.jpg?raw=true)
 ![Screenshot](https://github.com/ramenhut/final-stage-path-tracer-2-0/raw/master/thumbnails/fs2-15-s.jpg?raw=true)
+![Screenshot](https://github.com/ramenhut/final-stage-path-tracer-2-0/raw/master/thumbnails/fs2-7-s.jpg?raw=true)
 ![Screenshot](https://github.com/ramenhut/final-stage-path-tracer-2-0/raw/master/thumbnails/fs2-26-s.jpg?raw=true)
 
 ### License
