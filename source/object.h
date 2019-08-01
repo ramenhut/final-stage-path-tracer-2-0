@@ -32,28 +32,30 @@
 #ifndef __OBJECT_H__
 #define __OBJECT_H__
 
+#include <memory>
 #include <string>
 #include <vector>
-#include "bvh.h"
 #include "material.h"
 #include "math/base.h"
 #include "math/plane.h"
+#include "math/trace.h"
 #include "math/vector3.h"
+#include "math/volume.h"
 
 namespace base {
 
 typedef struct ObjectCollision {
   // The portion along the ray that the collision occurred.
-  float32 collision_param;
+  float32 param;
   // The coordinate where a collision occurred.
-  vector3 collision_point;
+  vector3 point;
   // The interpolated normal at the collision point.
   vector3 surface_normal;
   // The interpolated texcoords at the collision point.
   vector2 surface_texcoords;
   // The material at the surface that was struck.
   Material *surface_material;
-  // True if the colliding ray originated inside the object. 
+  // True if the colliding ray originated inside the object.
   bool is_internal;
   ObjectCollision();
 } ObjectCollision;
@@ -61,11 +63,16 @@ typedef struct ObjectCollision {
 class Object {
  public:
   // Returns the center point of the object.
-  virtual const vector3 GetCenter() = 0;
+  virtual const vector3 GetCenter() const = 0;
+  // Returns an axis aligned bounding box for the object's bounds.
+  virtual const bounds GetBounds() const = 0;
   // Initializes the basic material properties of the object.
   void SetMaterial(::std::shared_ptr<Material> material);
   // Returns the default material of the object.
   Material *GetMaterial() { return material_.get(); }
+  // Determines whether the ray intersects the object. Returns true if so,
+  // false otherwise. If a collision is detected, hit_info will contain
+  // information about the collision point.
   virtual bool Trace(const ray &trajectory, ObjectCollision *hit_info) = 0;
 
   Object();
@@ -77,10 +84,12 @@ class Object {
 class SphericalObject : public Object {
  public:
   SphericalObject(const vector3 &origin, float32 radius);
-  const vector3 GetCenter() override { return origin_; }
+  const vector3 GetCenter() const override { return origin_; }
+  const bounds GetBounds() const override { return aabb_; }
   bool Trace(const ray &trajectory, ObjectCollision *hit_info) override;
 
  private:
+  bounds aabb_;
   float32 radius_;
   vector3 origin_;
 };
@@ -88,30 +97,35 @@ class SphericalObject : public Object {
 class PlanarObject : public Object {
  public:
   PlanarObject(const plane &data);
-  const vector3 GetCenter() override { return vector3(); }
+  const vector3 GetCenter() const override { return vector3(); }
+  const bounds GetBounds() const override { return aabb_; }
   bool Trace(const ray &trajectory, ObjectCollision *hit_info) override;
 
  private:
+  bounds aabb_;
   plane plane_;
 };
 
 class DiscObject : public Object {
  public:
   DiscObject(const vector3 &origin, const vector3 &normal, float32 radius);
-  const vector3 GetCenter() override { return origin_; }
+  const vector3 GetCenter() const override { return origin_; }
+  const bounds GetBounds() const override { return aabb_; }
   bool Trace(const ray &trajectory, ObjectCollision *hit_info) override;
 
  private:
+  bounds aabb_;
   plane plane_;
   float32 radius_;
   vector3 origin_;
 };
 
-class CubicObject : public Object {
+class CuboidObject : public Object {
  public:
-  CubicObject(const vector3 &origin, float32 width, float32 height,
-              float32 depth);
-  const vector3 GetCenter() override { return cube_data_.query_center(); }
+  CuboidObject(const vector3 &origin, float32 width, float32 height,
+               float32 depth);
+  const vector3 GetCenter() const override { return cube_data_.query_center(); }
+  const bounds GetBounds() const override { return cube_data_.query_bounds(); }
   void Rotate(const vector3 &axis, float32 angle);
   bool Trace(const ray &trajectory, ObjectCollision *hit_info) override;
 
@@ -119,27 +133,22 @@ class CubicObject : public Object {
   cube cube_data_;
 };
 
-class MeshObject : public Object {
- public:
-  MeshObject(const ::std::string &filename, bool invert_normals = false,
-             const vector3 &translation = vector3(0, 0, 0), const vector3& scale = vector3(1, 1, 1));
-  const vector3 GetCenter() override { return shape_tree.GetCenter(); }
-  bool Trace(const ray &trajectory, ObjectCollision *hit_info) override;
+class QuadObject : public Object {
+public:
+    QuadObject(const vector3& origin, const vector3& normal, float32 width, float32 height);
+    QuadObject(const vector3& position, const vector3& u, const vector3& v);
+    const vector3 GetCenter() const override { return vector3(); }
+    const bounds GetBounds() const override { return aabb_; }
+    bool Trace(const ray& trajectory, ObjectCollision* hit_info) override;
 
- private:
-  // The acceleration structure for the shape. Used to speed up traces.
-  Bvh shape_tree;
-  // The face list of the shape. References vertices in the parent mesh.
-  ::std::vector<BvhFace> face_list;
-  // The following lists are shared between all shapes.
-  ::std::vector<vector3> vertices_;
-  // The per-vertex normals for the mesh.
-  ::std::vector<vector3> normals_;
-  // The per-vertex texcoords for the mesh.
-  ::std::vector<vector2> texcoords_;
-  // If materials_ is empty, or any shape does not reference a material,
-  // then the default Object-provided material will be used.
-  ::std::vector<::std::unique_ptr<Material>> materials_;
+private:
+    bounds aabb_;
+    plane plane_;
+    float32 half_width_;
+    float32 half_height_;
+    vector3 origin_;
+    vector3 bitangent_;
+    vector3 tangent_;
 };
 
 }  // namespace base

@@ -37,73 +37,71 @@
 #include "stdlib.h"
 #include "window/base_graphics.h"
 
-const ::base::uint32 kWidthWidth = 800;
-const ::base::uint32 kWindowHeight = 480;
+void PrintUsage(const char *programName) {
+  printf("Usage: %s [options]\n", programName);
+  printf("  --file [scene filename]  \tSpecifies the scene file to load.\n");
+  printf("  --width [integer]  \t\tSets the width of the output frame.\n");
+  printf("  --height [integer]  \t\tSets the height of the output frame.\n");
+}
 
 int main(int argc, char **argv) {
-  printf("Copyright (c) 2006-2018 Joe Bertolami. All Right Reserved.\n");
-  ::std::unique_ptr<::base::GraphicsWindow> window =
-      ::std::make_unique<::base::GraphicsWindow>("Final Stage Path Tracer 2.0",
-                                                 100, 10, kWidthWidth,
-                                                 kWindowHeight, 32, 0);
-  ::std::vector<::base::InputEvent> window_events;
-  ::base::ImagePlaneCache image_cache(kWidthWidth, kWindowHeight);
-  ::base::DisplayFrame output_frame(kWidthWidth, kWindowHeight);
+  printf("Copyright (c) 2006-2019 Joe Bertolami. All Right Reserved.\n");
+
+  ::std::string scene_filename;
+  ::base::uint32 window_width = 800;
+  ::base::uint32 window_height = 480;
+
+  if (argc <= 1) {
+    PrintUsage(argv[0]);
+    return 0;
+  }
+
+  for (int i = 1; i < argc; i++) {
+    char *optBegin = argv[i];
+    for (int j = 0; j < 2; j++) (optBegin[0] == '-') ? optBegin++ : optBegin;
+
+    switch (optBegin[0]) {
+      case 'f':
+        scene_filename = argv[++i];
+        break;
+      case 'w':
+        window_width = atoi(argv[++i]);
+        break;
+      case 'h':
+        window_height = atoi(argv[++i]);
+        break;
+    }
+  }
+
+  if (!scene_filename.length()) {
+    printf("You must specify a scene filename (-f filename).\n");
+    return 0;
+  }
+
+  printf(
+      "Loading scene %s and rendering at %ix%i resolution.\n",
+      scene_filename.c_str(), window_width, window_height);
+
   ::base::Scene scene;
-  ::base::Camera camera(::base::vector3(-9.80, 9.05, -87.06),
+  ::base::Camera camera(::base::vector3(-5.80, 7.05, -47.06),
                         ::base::vector3(0.00, 8.94, 0.00));
+
+  if (!scene.LoadScene(scene_filename)) {
+    return 0;
+  }
+
+  ::std::unique_ptr<::base::GraphicsWindow> window =
+      ::std::make_unique<::base::GraphicsWindow>("Final Stage Path Tracer 2.02",
+                                                 100, 10, window_width,
+                                                 window_height, 32, 0);
+  ::std::vector<::base::InputEvent> window_events;
+  ::base::ImagePlaneCache image_cache(window_width, window_height);
+  ::base::DisplayFrame output_frame(window_width, window_height);
 
   ::base::InitializeMaterials();
 
-  // Stone floor.
-  auto white_diffuse_mat = ::std::make_shared<::base::DiffuseMaterial>(
-      ::base::vector3(0.6f, 0.6f, 0.6f));
-  white_diffuse_mat->LoadDiffuseTexture("assets/textures/stone3.bmp", 0.005f);
-  // HDR background.
-  auto hdr_mat =
-      ::std::make_shared<::base::LightMaterial>(::base::vector3(5, 5, 5));
-  hdr_mat->LoadDiffuseTexture("assets/backgrounds/knoll.exr");
-
-  // Option 1: Clay (fully diffuse)
-  auto clay_mat = ::std::make_shared<::base::DiffuseMaterial>(
-      ::base::vector3(0.4f, 0.4f, 0.6f));
-  // Option 2: Ceramic (diffuse + specular)
-  auto ceramic_mat = ::std::make_shared<::base::CeramicMaterial>(
-      ::base::vector3(1.0, 0.7, 0.4), 0.2f);
-  // Option 3: Metallic (constrained reflection)
-  auto metal_mat = ::std::make_shared<::base::MetalMaterial>(
-      ::base::vector3(0.9, 0.7, 0.4f), 0.2f);
-  // Option 4: Paper (constrained reflection)
-  auto paper_mat = ::std::make_shared<::base::MetalMaterial>(
-      ::base::vector3(0.7, 0.7, 0.4f), 0.4f);
-  // Option 5: Glass (reflection + refraction)
-  auto glass_mat = ::std::make_shared<::base::GlassMaterial>(
-      ::base::vector3(0.95, 0.65, 0.45));
-  // Option 6: Liquid (reflection + refraction)
-  auto liquid_mat = ::std::make_shared<::base::LiquidMaterial>(
-      ::base::vector3(0.85, 0.75, 0.95));
-  // Option 7: Mirror (perfectly reflective)
-  auto mirror_mat =
-      ::std::make_shared<::base::MirrorMaterial>(::base::vector3(1, 1, 1));
-  // Option 8: Magical (emissive + ceramic)
-  auto magical_mat = ::std::make_shared<::base::GlowMaterial>(
-      ::base::vector3(1.0, 0.7, 0.8), ::base::vector3(0.4, 0.1, 0.4), 0.2f);
-  // Option 9: White light (full emission)
-  auto light_mat =
-      ::std::make_shared<::base::LightMaterial>(::base::vector3(20, 20, 20));
-
-  scene.SetSkyMaterial(hdr_mat);
-
-  // Stanford dragon (primary object)
-  ::base::Object *mesh_object =
-      scene.AddMeshObject("assets/meshes/dragon.obj", true, ::base::vector3(0, -10, 0),
-                          ::base::vector3(1, 1, 1));
-  mesh_object->SetMaterial(metal_mat);
-
-  {  // floor
-    ::base::Object *plane_object =
-        scene.AddPlanarObject(::base::plane(0, 1, 0, 10));
-    plane_object->SetMaterial(white_diffuse_mat);
+  if (scene.GetCameraCount()) {
+    camera = *scene.GetCamera(0);
   }
 
   bool mouse_down = false;
@@ -138,6 +136,8 @@ int main(int argc, char **argv) {
                                         .normalize()
                                         .cross(::base::vector3(0, 1, 0));
         camera.origin = camera.origin.rotate(y_delta * 3.0f, right_vec);
+        printf("Origin: %.2f, %.2f, %.2f\n", camera.origin.x, camera.origin.y,
+               camera.origin.z);
         output_frame.Reset();
         image_cache.Invalidate();
       } else if (event.switch_index == ::base::kInputMouseRightButtonIndex &&
@@ -146,60 +146,19 @@ int main(int argc, char **argv) {
             camera, &scene, &output_frame,
             (event.target_x + 1) * output_frame.GetWidth() * 0.5f,
             (event.target_y + 1) * output_frame.GetHeight() * 0.5f);
-        output_frame.Reset();
-        image_cache.Invalidate();
-      } else if (event.switch_index >= 49 && event.switch_index <= 57 &&
-                 event.is_on) {
-        switch (event.switch_index) {
-          case 49:
-            printf("Selected CLAY material.\n");
-            mesh_object->SetMaterial(clay_mat);
-            break;
-          case 50:
-            printf("Selected CERAMIC material.\n");
-            mesh_object->SetMaterial(ceramic_mat);
-            break;
-          case 51:
-            printf("Selected METAL material.\n");
-            mesh_object->SetMaterial(metal_mat);
-            break;
-          case 52:
-            printf("Selected PAPER material.\n");
-            mesh_object->SetMaterial(paper_mat);
-            break;
-          case 53:
-            printf("Selected GLASS material.\n");
-            mesh_object->SetMaterial(glass_mat);
-            break;
-          case 54:
-            printf("Selected LIQUID material.\n");
-            mesh_object->SetMaterial(liquid_mat);
-            break;
-          case 55:
-            printf("Selected MIRROR material.\n");
-            mesh_object->SetMaterial(mirror_mat);
-            break;
-          case 56:
-            printf("Selected MAGICAL material.\n");
-            mesh_object->SetMaterial(magical_mat);
-            break;
-          case 57:
-            printf("Selected LIGHT material.\n");
-            mesh_object->SetMaterial(light_mat);
-            break;
-        }
+
+        printf("Focus: %.2f\n", camera.focal_depth);
         output_frame.Reset();
         image_cache.Invalidate();
       }
     }
 
-    // One pass over the scene using the path tracer.
     ::base::TraceScene(camera, &scene, &output_frame);
 
     window->BeginScene();
     glClearColor(0.5f, 0.5f, 0.4f, 1);
     glClear(GL_COLOR_BUFFER_BIT);
-    glDrawPixels(kWidthWidth, kWindowHeight, GL_RGB, GL_UNSIGNED_BYTE,
+    glDrawPixels(window_width, window_height, GL_RGB, GL_UNSIGNED_BYTE,
                  output_frame.GetDisplayBuffer());
     window->EndScene();
   }

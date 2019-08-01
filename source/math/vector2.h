@@ -268,7 +268,7 @@ inline const vector2& vector2::operator/=(float32 rhs) {
 }
 
 inline bool vector2::operator==(const vector2& rhs) const {
-  return (x == rhs.x && y == rhs.y);
+  return (compare_epsilon(x, rhs.x) && compare_epsilon(y, rhs.y));
 }
 
 inline bool vector2::operator!=(const vector2& rhs) const {

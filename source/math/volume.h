@@ -114,6 +114,7 @@ class cube {
   vector3 query_min() const;
   vector3 query_max() const;
   vector3 query_center() const;
+  bounds query_bounds() const;
   const plane& query_plane(uint8 index) const;
 
   void set_center(const vector3& center);
@@ -126,6 +127,7 @@ class cube {
   // Computes 6 face planes from the cube vertices.
   void compute_planes();
   friend class bounds;
+  bounds aabb_;
   vector3 vertices[8];
   plane face_planes[6];
 };

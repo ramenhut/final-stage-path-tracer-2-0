@@ -262,7 +262,8 @@ inline const vector4& vector4::operator=(const vector4& rhs) {
 }
 
 inline bool vector4::operator==(const vector4& rhs) const {
-  return (x == rhs.x && y == rhs.y && z == rhs.z && w == rhs.w);
+  return (compare_epsilon(x, rhs.x) && compare_epsilon(y, rhs.y) &&
+          compare_epsilon(z, rhs.z) && compare_epsilon(w, rhs.w));
 }
 
 inline bool vector4::operator!=(const vector4& rhs) const {

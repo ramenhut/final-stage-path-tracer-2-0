@@ -189,7 +189,12 @@ vector3 MirrorMaterial::Sample(
   return light_color * diffuse_;
 }
 
-GlassMaterial::GlassMaterial(const vector3 diffuse) { diffuse_ = diffuse; }
+GlassMaterial::GlassMaterial(const vector3 diffuse, float32 index, float32 reflectivity, float32 frost) {
+  diffuse_ = diffuse;
+  index_ = index;
+  frost_ = frost;
+  reflectivity_ = reflectivity;
+}
 
 bool GlassMaterial::WillUseIndirectLight(const vector3 &incident_light,
                                          const vector3 &normal) const {
@@ -198,11 +203,13 @@ bool GlassMaterial::WillUseIndirectLight(const vector3 &incident_light,
 
 vector3 GlassMaterial::Reflection(const vector3 &view, const vector3 &normal,
                                   bool is_internal) const {
-  float32 index = 1.0f / 1.15f;
-  if (is_internal) {
-    index = 1.0f / index;
+  if (random_float() < reflectivity_) {
+    return normal_generator.random_reflection(view, normal,
+                                              BASE_PI * frost_);
   }
-  return view.refract(normal, index);
+
+  return normal_generator.random_refraction(view, normal,
+                                            BASE_PI * frost_, index_);
 }
 
 vector3 GlassMaterial::Sample(
@@ -213,7 +220,11 @@ vector3 GlassMaterial::Sample(
   return light_color * diffuse_;
 }
 
-LiquidMaterial::LiquidMaterial(const vector3 diffuse) { diffuse_ = diffuse; }
+LiquidMaterial::LiquidMaterial(const vector3 diffuse, float32 index, float32 reflectivity) {
+  diffuse_ = diffuse;
+  index_ = index;
+  reflectivity_ = reflectivity;
+}
 
 bool LiquidMaterial::WillUseIndirectLight(const vector3 &incident_light,
                                           const vector3 &normal) const {
@@ -222,12 +233,10 @@ bool LiquidMaterial::WillUseIndirectLight(const vector3 &incident_light,
 
 vector3 LiquidMaterial::Reflection(const vector3 &view, const vector3 &normal,
                                    bool is_internal) const {
-  if (random_float() < 0.4f) {
+  if (random_float() < reflectivity_) {
     return view.reflect(normal);
   }
-
-  float32 index = 1.0f / 1.33f;
-  return view.refract(normal, index);
+  return view.refract(normal, index_);
 }
 
 // Determines the color of reflected light according to the material

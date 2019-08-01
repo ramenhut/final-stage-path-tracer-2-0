@@ -1950,7 +1950,6 @@ bool LoadObj(attrib_t *attrib, std::vector<shape_t> *shapes,
       if (material_map.find(namebuf) != material_map.end()) {
         newMaterialId = material_map[namebuf];
       } else {
-        printf("Error: material not found!\n");
         // { error!! material not found }
       }
 

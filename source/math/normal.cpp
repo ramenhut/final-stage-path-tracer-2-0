@@ -63,8 +63,7 @@ vector3 normal_sphere::random_reflection(const vector3& incident,
 
 vector3 normal_sphere::random_refraction(const vector3& incident,
                                          const vector3& normal,
-                                         float32 solid_angle, float32 n_l,
-                                         float32 n_t) {
+                                         float32 solid_angle, float32 index) {
   float32 half_solid_angle = solid_angle / 2.0f;
   float32 random_solid_delta =
       (random_float_range(-1.0f, 1.0f)) * half_solid_angle;
@@ -74,12 +73,12 @@ vector3 normal_sphere::random_refraction(const vector3& incident,
   // store it in our reflect variable) that is within solid angle from the
   // proper refraction angle.
 
-  if (compare_epsilon(n_l, n_t, BASE_EPSILON)) {
+  if (compare_epsilon(index, 1.0, BASE_EPSILON)) {
     // We are travelling through air or are internal to the object,
     // thus we simply continue along the incident path
     reflect = incident;
   } else {
-    reflect = incident.refract(normal, n_l / n_t);
+    reflect = incident.refract(normal, index);
   }
 
   reflect = reflect.normalize();

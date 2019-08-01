@@ -232,12 +232,18 @@ cube::cube() {}
 cube::cube(const bounds& rhs) { (*this) = rhs; }
 
 void cube::compute_planes() {
-    face_planes[0] = calculate_plane(vertices[0], vertices[1], vertices[2]); // bottom
-    face_planes[1] = calculate_plane(vertices[6], vertices[5], vertices[4]); // top
-    face_planes[2] = calculate_plane(vertices[5], vertices[6], vertices[2]); // right
-    face_planes[3] = calculate_plane(vertices[7], vertices[4], vertices[0]); // left
-    face_planes[4] = calculate_plane(vertices[4], vertices[5], vertices[1]); // front
-    face_planes[5] = calculate_plane(vertices[6], vertices[7], vertices[3]); // back
+  face_planes[0] =
+      calculate_plane(vertices[0], vertices[1], vertices[2]);  // bottom
+  face_planes[1] =
+      calculate_plane(vertices[6], vertices[5], vertices[4]);  // top
+  face_planes[2] =
+      calculate_plane(vertices[5], vertices[6], vertices[2]);  // right
+  face_planes[3] =
+      calculate_plane(vertices[7], vertices[4], vertices[0]);  // left
+  face_planes[4] =
+      calculate_plane(vertices[4], vertices[5], vertices[1]);  // front
+  face_planes[5] =
+      calculate_plane(vertices[6], vertices[7], vertices[3]);  // back
 }
 
 const cube& cube::operator=(const cube& rhs) {
@@ -245,16 +251,18 @@ const cube& cube::operator=(const cube& rhs) {
     vertices[i] = rhs.vertices[i];
   }
 
-  for (uint32 i = 0; i < 6; i++ ){
-      face_planes[i] = rhs.face_planes[i];
+  for (uint32 i = 0; i < 6; i++) {
+    face_planes[i] = rhs.face_planes[i];
   }
 
+  aabb_ = rhs.aabb_;
   return (*this);
 }
 
 const cube& cube::operator=(const bounds& rhs) {
   vector3 v_norm_min = rhs.bounds_min;
   vector3 v_norm_max = rhs.bounds_max;
+  aabb_ = rhs;
 
   vector3 v_box[8] = {v_norm_min,
                       vector3(v_norm_max.x, v_norm_min.y, v_norm_min.z),
@@ -289,47 +297,22 @@ void cube::set_center(const vector3& pNewCenter) {
   vector3 v_center = query_center();
   vector3 v_vector_to_new = (pNewCenter)-v_center;
 
+  aabb_.clear();
   for (uint32 i = 0; i < 8; i++) {
     vertices[i] = vertices[i] + v_vector_to_new;
+    aabb_ += vertices[i];
   }
 
   compute_planes();
 }
 
-vector3 cube::query_min() const {
-  vector3 v_min = vector3(9999, 9999, 9999);
+vector3 cube::query_min() const { return aabb_.bounds_min; }
 
-  for (uint32 i = 0; i < 8; i++) {
-    if (vertices[i].x < v_min.x) v_min.x = vertices[i].x;
-    if (vertices[i].y < v_min.y) v_min.y = vertices[i].y;
-    if (vertices[i].z < v_min.z) v_min.z = vertices[i].z;
-  }
+vector3 cube::query_max() const { return aabb_.bounds_max; }
 
-  return v_min;
-}
+vector3 cube::query_center() const { return aabb_.query_center(); }
 
-vector3 cube::query_max() const {
-  vector3 v_max = vector3(-9999, -9999, -9999);
-
-  for (uint32 i = 0; i < 8; i++) {
-    if (vertices[i].x > v_max.x) v_max.x = vertices[i].x;
-    if (vertices[i].y > v_max.y) v_max.y = vertices[i].y;
-    if (vertices[i].z > v_max.z) v_max.z = vertices[i].z;
-  }
-
-  return v_max;
-}
-
-vector3 cube::query_center() const {
-  vector3 v_average;
-
-  for (uint32 i = 0; i < 8; i++) {
-    v_average += vertices[i];
-  }
-
-  v_average /= 8.0f;
-  return v_average;
-}
+bounds cube::query_bounds() const { return aabb_; }
 
 float32 cube::angle_x() const {
   // Flatten the x coordinate and determine angle of rotation of the quad from
@@ -450,10 +433,12 @@ float32 cube::angle_z() const {
 
 void cube::rotate(const vector3& vAxis, float32 fangle) {
   vector3 v_center = query_center();
+  aabb_.clear();
 
   for (uint32 i = 0; i < 8; i++) {
     vector3 v_temp = vertices[i] - v_center;
     vertices[i] = v_temp.rotate(fangle, vAxis) + v_center;
+    aabb_ += vertices[i];
   }
 
   compute_planes();
@@ -461,9 +446,11 @@ void cube::rotate(const vector3& vAxis, float32 fangle) {
 
 void cube::scale(const vector3& scale) {
   vector3 center = query_center();
+  aabb_.clear();
 
   for (uint32 i = 0; i < 8; i++) {
     vertices[i] = ((vertices[i] - center) * scale) + center;
+    aabb_ += vertices[i];
   }
 
   compute_planes();
@@ -487,6 +474,7 @@ cube cube::transform(const matrix4& pXForm) const {
     }
 
     temp.vertices[i].set(v_temp.x, v_temp.y, v_temp.z);
+    temp.aabb_ += temp.vertices[i];
   }
 
   return temp;

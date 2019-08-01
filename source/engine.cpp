@@ -13,7 +13,7 @@
 
 namespace base {
 
-const uint32 kMaximumTraceDepth = 32;
+const uint32 kMaximumTraceDepth = 8;
 const float32 kTraceStepObjectOffset = 0.03f;
 
 uint64 GetSystemTime() {
@@ -28,89 +28,6 @@ uint64 GetSystemTime() {
 
 uint64 GetElapsedTimeMs(uint64 from_time) {
   return (GetSystemTime() - from_time);
-}
-
-Camera::Camera()
-    : origin(0, 0, -200),
-      target(0, 0, 0),
-      fov_y(45),
-      aperture_size(1.5),
-      focal_depth(80),
-      z_near(1.0f),
-      z_far(10000.0f),
-      fast_render_enabled(false) {}
-
-Camera::Camera(const vector3& new_origin, const vector3& new_target)
-    : origin(new_origin),
-      target(new_target),
-      fov_y(45),
-      aperture_size(1.5),
-      focal_depth(80),
-      z_near(1.0f),
-      z_far(10000.0f),
-      fast_render_enabled(false) {}
-
-Scene::Scene() { sky_material_.reset(new LightMaterial(vector3(0, 0, 0))); }
-
-void Scene::SetSkyMaterial(::std::shared_ptr<LightMaterial> material) {
-  sky_material_ = material;
-}
-
-const vector3 Scene::SampleSky(uint32 depth, const vector3& view) {
-  vector2 tex_coords = sphere_map_texcoords(view);
-  return sky_material_->Sample(depth, vector3(), vector3(), view, vector3(),
-                               vector3(), vector3(), vector3(), tex_coords) *
-         3.0;
-}
-
-MeshObject* Scene::AddMeshObject(const ::std::string& filename,
-                                 bool invert_normals,
-                                 const vector3& translation,
-                                 const vector3& scale) {
-  object_list_.emplace_back(
-      new MeshObject(filename, invert_normals, translation, scale));
-  return reinterpret_cast<MeshObject*>(object_list_.back().get());
-}
-
-SphericalObject* Scene::AddSphericalObject(const vector3& origin,
-                                           float32 radius) {
-  object_list_.emplace_back(new SphericalObject(origin, radius));
-  return reinterpret_cast<SphericalObject*>(object_list_.back().get());
-}
-
-PlanarObject* Scene::AddPlanarObject(const plane& data) {
-  object_list_.emplace_back(new PlanarObject(data));
-  return reinterpret_cast<PlanarObject*>(object_list_.back().get());
-}
-
-DiscObject* Scene::AddDiscObject(const vector3& origin, const vector3& normal,
-                                 float32 radius) {
-  object_list_.emplace_back(new DiscObject(origin, normal, radius));
-  return reinterpret_cast<DiscObject*>(object_list_.back().get());
-}
-
-CubicObject* Scene::AddCubicObject(const vector3& origin, float32 width,
-                                   float32 height, float32 depth) {
-  object_list_.emplace_back(new CubicObject(origin, width, height, depth));
-  return reinterpret_cast<CubicObject*>(object_list_.back().get());
-}
-
-bool Scene::Trace(const ray& trajectory, ObjectCollision* hit_info) {
-  bool collision_detected = false;
-  for (auto& i : object_list_) {
-    collision_detected |= i.get()->Trace(trajectory, hit_info);
-  }
-  plane collision_plane =
-      calculate_plane(hit_info->surface_normal, hit_info->collision_point);
-  // If we've struck a back facing surface then invert our normal and
-  // flag this collision as internal. This provides our materials with
-  // a consistent orientation while also allowing them to handle internal
-  // collisions appropriately.
-  if (plane_distance(collision_plane, trajectory.start) < 0.0) {
-    hit_info->surface_normal *= -1.0;
-    hit_info->is_internal = true;
-  }
-  return collision_detected;
 }
 
 ImagePlaneCache::ImagePlaneCache(uint32 width, uint32 height) {
@@ -191,19 +108,17 @@ vector3 TraceStep(const Camera& viewer, const ray* trajectory, Scene* scene,
   // Copy out our collision point, in case the caller needs it to compute
   // a final reflected color value.
   if (hit_position) {
-    (*hit_position) = collision_info.collision_point;
+    (*hit_position) = collision_info.point;
   }
 
-  vector3 view_vector =
-      (collision_info.collision_point - trajectory->start).normalize();
+  vector3 view_vector = (collision_info.point - trajectory->start).normalize();
 
   // From the material we gather the reflection vector to sample indirect light.
   vector3 reflection_vector = collision_info.surface_material->Reflection(
       view_vector, collision_info.surface_normal, collision_info.is_internal);
 
-  ray reflection_ray(
-      collision_info.collision_point,
-      collision_info.collision_point + reflection_vector * viewer.z_far);
+  ray reflection_ray(collision_info.point,
+                     collision_info.point + reflection_vector * viewer.z_far);
 
   // Adjust our starting position for the reflection by an epsilon, to ensure we
   // do not collide against the starting object.
@@ -224,16 +139,20 @@ vector3 TraceStep(const Camera& viewer, const ray* trajectory, Scene* scene,
 
   // Compute the final material contribution.
   vector3 output = collision_info.surface_material->Sample(
-      depth, collision_info.collision_point, trajectory->start, view_vector,
+      depth, collision_info.point, trajectory->start, view_vector,
       indirect_origin, reflection_vector, indirect_contribution,
       collision_info.surface_normal, collision_info.surface_texcoords,
       collision_info.is_internal);
 
   if (depth == 0) {
+    // Check if our output color requires tone mapping into our visible range.
+    if (output.length() > 10.0 && collision_info.surface_material->IsLight()) {
+      output = output.normalize() * 10.0;
+    }
     result->color = output;
     result->normal = collision_info.surface_normal;
     result->material_id = collision_info.surface_material->GetID();
-    result->depth = collision_info.collision_point.distance(trajectory->start);
+    result->depth = collision_info.point.distance(trajectory->start);
   }
 
   return output;
@@ -357,7 +276,8 @@ void TraceScene(const Camera& viewer, Scene* scene, DisplayFrame* output,
   ::std::vector<uint32> thread_ray_count;
   thread_ray_count.resize(1);
   thread_ray_count[0] = 0;
-  TraceThreadFunction(viewer, scene, output, cache, 0, &thread_ray_count);
+  TraceThreadFunction(viewer, scene, max_bounces, output, cache, 0,
+                      &thread_ray_count);
 #endif
 
   uint32 frame_elapsed_time = GetElapsedTimeMs(frame_start_time);
@@ -405,7 +325,7 @@ float32 TraceRange(const Camera& viewer, Scene* scene, DisplayFrame* frame,
     return viewer.z_far;
   }
 
-  return (collision_info.collision_point - viewer.origin).length();
+  return (collision_info.point - viewer.origin).length();
 }
 
 }  // namespace base

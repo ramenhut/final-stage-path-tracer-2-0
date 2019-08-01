@@ -50,7 +50,7 @@ class normal_sphere {
                             float32 solidangle);
   // Returns a random refraction normal within the solid angle envelope.
   vector3 random_refraction(const vector3& incident, const vector3& normal,
-                            float32 solidangle, float32 n_l, float32 n_t);
+                            float32 solidangle, float32 index);
 
  private:
   // The normal list is allocated and populated during setup,

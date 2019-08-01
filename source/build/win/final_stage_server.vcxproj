@@ -20,7 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\bitmap.cpp" />
-    <ClCompile Include="..\..\bvh.cpp" />
+    <ClCompile Include="..\..\camera.cpp" />
     <ClCompile Include="..\..\engine.cpp" />
     <ClCompile Include="..\..\frame.cpp" />
     <ClCompile Include="..\..\main.cpp" />
@@ -40,7 +40,9 @@
     <ClCompile Include="..\..\math\vector3.cpp" />
     <ClCompile Include="..\..\math\vector4.cpp" />
     <ClCompile Include="..\..\math\volume.cpp" />
+    <ClCompile Include="..\..\mesh.cpp" />
     <ClCompile Include="..\..\object.cpp" />
+    <ClCompile Include="..\..\scene.cpp" />
     <ClCompile Include="..\..\window\base_graphics.cpp" />
     <ClCompile Include="..\..\window\base_window.cpp" />
     <ClCompile Include="..\..\window\base_window_win.cpp" />
@@ -48,6 +50,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\bitmap.h" />
     <ClInclude Include="..\..\bvh.h" />
+    <ClInclude Include="..\..\camera.h" />
     <ClInclude Include="..\..\engine.h" />
     <ClInclude Include="..\..\frame.h" />
     <ClInclude Include="..\..\material.h" />
@@ -71,7 +74,9 @@
     <ClInclude Include="..\..\math\vector3.h" />
     <ClInclude Include="..\..\math\vector4.h" />
     <ClInclude Include="..\..\math\volume.h" />
+    <ClInclude Include="..\..\mesh.h" />
     <ClInclude Include="..\..\object.h" />
+    <ClInclude Include="..\..\scene.h" />
     <ClInclude Include="..\..\third_party\tiny_exr_loader.h" />
     <ClInclude Include="..\..\third_party\tiny_obj_loader.h" />
     <ClInclude Include="..\..\window\base_graphics.h" />
@@ -84,7 +89,7 @@
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>finalstageserver</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>final_stage_</ProjectName>
+    <ProjectName>final-stage</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -139,7 +144,7 @@
     <OutDir>$(SolutionDir)..\..\..\bin</OutDir>
     <IntDir>$(SolutionDir)..\..\..\bin\$(Platform)\$(Configuration)\</IntDir>
     <IncludePath>$(SolutionDir)..\;$(IncludePath)</IncludePath>
-    <TargetName>$(ProjectName)$(Platform)</TargetName>
+    <TargetName>$(ProjectName)-$(Platform)</TargetName>
     <LibraryPath>$(SolutionDir)..\..\lib\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -150,7 +155,7 @@
     <OutDir>$(SolutionDir)..\..\..\bin</OutDir>
     <IntDir>$(SolutionDir)..\..\..\bin\$(Platform)\$(Configuration)\</IntDir>
     <IncludePath>$(SolutionDir)..\;$(IncludePath)</IncludePath>
-    <TargetName>$(ProjectName)$(Platform)</TargetName>
+    <TargetName>$(ProjectName)-$(Platform)</TargetName>
     <LibraryPath>$(SolutionDir)..\..\lib\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -173,8 +178,10 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <DisableSpecificWarnings>
+      </DisableSpecificWarnings>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -208,10 +215,12 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
       <FloatingPointModel>Fast</FloatingPointModel>
+      <DisableSpecificWarnings>
+      </DisableSpecificWarnings>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

@@ -34,7 +34,6 @@
 
 #include <string>
 #include <vector>
-#include "bvh.h"
 #include "math/base.h"
 #include "math/plane.h"
 #include "math/vector3.h"
@@ -88,7 +87,7 @@ class Material {
 
 class DiffuseMaterial : public Material {
  public:
-  DiffuseMaterial() {}
+  DiffuseMaterial() :texture_scale_(0) {}
   DiffuseMaterial(const vector3 &diffuse);
   DiffuseMaterial(const ::std::string &filename, float32 tex_scale = 1.0f);
   virtual ~DiffuseMaterial() {}
@@ -210,7 +209,7 @@ class MirrorMaterial : public DiffuseMaterial {
 class GlassMaterial : public DiffuseMaterial {
  public:
   GlassMaterial() {}
-  GlassMaterial(const vector3 diffuse);
+  GlassMaterial(const vector3 diffuse, float32 index = 0.75f, float32 reflectivity = 0.1, float32 frost = 0.0f);
   virtual ~GlassMaterial() {}
   // Indicates that this material does support transmitted light.
   virtual bool WillUseTransmittedLight() const override { return true; }
@@ -228,12 +227,17 @@ class GlassMaterial : public DiffuseMaterial {
                  const vector3 &light_color, const vector3 &surface_normal,
                  const vector2 &surface_texcoords = vector2(0, 0),
                  bool is_internal = false) override;
+
+protected:
+    float32 index_;
+    float32 frost_;
+    float32 reflectivity_;
 };
 
 class LiquidMaterial : public DiffuseMaterial {
  public:
   LiquidMaterial() {}
-  LiquidMaterial(const vector3 diffuse);
+  LiquidMaterial(const vector3 diffuse, float32 index = 0.75f, float32 reflectivity = 0.4f);
   virtual ~LiquidMaterial() {}
   // Indicates that this material does support transmitted light.
   virtual bool WillUseTransmittedLight() const override { return false; }
@@ -251,6 +255,10 @@ class LiquidMaterial : public DiffuseMaterial {
                  const vector3 &light_color, const vector3 &surface_normal,
                  const vector2 &surface_texcoords = vector2(0, 0),
                  bool is_internal = false) override;
+
+protected:
+    float32 index_;
+    float32 reflectivity_;
 };
 
 class CeramicMaterial : public DiffuseMaterial {
