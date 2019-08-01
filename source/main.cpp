@@ -45,7 +45,9 @@ void PrintUsage(const char *programName) {
 }
 
 int main(int argc, char **argv) {
-  printf("Copyright (c) 2006-2019 Joe Bertolami. All Right Reserved.\n");
+  printf(
+      "Copyright (c) 2006-2019 Joe Bertolami. All Right Reserved.\nFor more "
+      "information visit https://bertolami.com.\n\n");
 
   ::std::string scene_filename;
   ::base::uint32 window_width = 800;
@@ -78,9 +80,8 @@ int main(int argc, char **argv) {
     return 0;
   }
 
-  printf(
-      "Loading scene %s and rendering at %ix%i resolution.\n",
-      scene_filename.c_str(), window_width, window_height);
+  printf("Loading scene %s and rendering at %ix%i resolution.\n",
+         scene_filename.c_str(), window_width, window_height);
 
   ::base::Scene scene;
   ::base::Camera camera(::base::vector3(-5.80, 7.05, -47.06),
@@ -91,9 +92,9 @@ int main(int argc, char **argv) {
   }
 
   ::std::unique_ptr<::base::GraphicsWindow> window =
-      ::std::make_unique<::base::GraphicsWindow>("Final Stage Path Tracer 2.02",
-                                                 100, 10, window_width,
-                                                 window_height, 32, 0);
+      ::std::make_unique<::base::GraphicsWindow>(
+          "Final Stage Path Tracer 2.02", 100, 10, window_width,
+          window_height, 32, 0);
   ::std::vector<::base::InputEvent> window_events;
   ::base::ImagePlaneCache image_cache(window_width, window_height);
   ::base::DisplayFrame output_frame(window_width, window_height);
