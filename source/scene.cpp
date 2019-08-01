@@ -499,6 +499,9 @@ bool Scene::LoadScene(const ::std::string& filename) {
     return false;
   }
 
+  // Simple scene importing inspired by the scene loader from:
+  // https://github.com/knightcrawler25/GLSL-PathTracer/.
+
   ::std::string input_line;
   while (getline(input_file, input_line)) {
     if (input_line[0] == '#') continue;
